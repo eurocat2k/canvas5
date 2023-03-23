@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#" type="image/x-icon">
+    <link rel="stylesheet" href="css/all.css">
+    <script defer src="js/main.js"></script>
+    <title>CANVAS5</title>
+</head>
+<body>
+    <div class="wrapper no-select">
+        <!-- Canvases -->
+        <canvas id="base" data-interactive="false" ></canvas>
+        <canvas id="sector" data-interactive="false" ></canvas>
+        <canvas id="characteristic" data-interactive="false" ></canvas>
+        <canvas id="track" data-interactive="false" ></canvas>
+        <canvas id="top" data-interactive="true"></canvas>
+        <!-- Info tabs -->
+        <div class="infotab round-top-left round-top-right">
+            <div class="row">
+                <div class="cell label">Mouse Pos</div>
+            </div>
+            <div class="row">
+                <div id="mx" class="cell value">0</div>
+                <div id="my" class="cell value">0</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Canvas Pos</div>
+            </div>
+            <div class="row">
+                <div id="cx" class="cell value">0</div>
+                <div id="cy" class="cell value">0</div>
+            </div>
+            <div class="row">
+                <div class="cell label">World Pos</div>
+            </div>
+            <div class="row">
+                <div id="wx" class="cell value">0</div>
+                <div id="wy" class="cell value">0</div>
+            </div>
+        </div>
+        <!-- Side bar -->
+        <div class="sidebar">
+            <div class="icon">
+                <div class="hamburger-menu">
+                    <input type="checkbox">
+                </div>
+            </div>
+            <div class="icon">1</div>
+            <div class="icon">2</div>
+        </div>
+    </div>
+</body>
+</html>
