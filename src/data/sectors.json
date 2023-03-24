@@ -1,0 +1,135 @@
+{
+    "layer-descr": "layer ID, upper in ft, lower in ft",
+    "layer": [
+        {
+            "id": 1,
+            "upper": 2000,
+            "lover": 0
+        },{
+            "id": 2,
+            "upper": 2100,
+            "lover": 2000
+        },{
+            "id": 3,
+            "upper": 2600,
+            "lover": 2100
+        },{
+            "id": 4,
+            "upper": 3600,
+            "lover": 2600
+        },{
+            "id": 5,
+            "upper": 5600,
+            "lover": 3600
+        },{
+            "id": 6,
+            "upper": 6600,
+            "lover": 5600
+        },{
+            "id": 7,
+            "upper": 7600,
+            "lover": 6600
+        },{
+            "id": 8,
+            "upper": 8100,
+            "lover": 7600
+        },{
+            "id": 9,
+            "upper": 9500,
+            "lover": 8100
+        },{
+            "id": 10,
+            "upper": 12500,
+            "lover": 9500
+        },{
+            "id": 11,
+            "upper": 17500,
+            "lover": 12500
+        },{
+            "id": 12,
+            "upper": 19500,
+            "lover": 17500
+        },{
+            "id": 13,
+            "upper": 24500,
+            "lover": 19500
+        },{
+            "id": 14,
+            "upper": 30500,
+            "lover": 24500
+        },{
+            "id": 15,
+            "upper": 34500,
+            "lover": 30500
+        },{
+            "id": 16,
+            "upper": 36500,
+            "lover": 34500
+        },{
+            "id": 17,
+            "upper": 37500,
+            "lover": 36500
+        },{
+            "id": 18,
+            "upper": 38500,
+            "lover": 37500
+        },{
+            "id": 19,
+            "upper": 67000,
+            "lover": 38500
+        }
+    ],
+    "volume": [
+        {
+            "id":1,
+            "name": "CTR",
+            "layers": {
+                "bottom":1,
+                "top":4
+            },
+            "limitPoints": [
+                257, 202, 676, 203, 249, 204, 248, 1501, 205, 247, 677, 206, 209, 1504, 210, 683
+            ]
+        },{
+            "id":2,
+            "name": "TMA",
+            "layers": {
+                "bottom":3,
+                "top":4
+            },
+            "limitPoints": [
+                1403, 1404, 1405, 1406, 1505, 1504, 210, 683, 257, 202, 676, 203, 249
+            ]
+        },{
+            "id":3,
+            "name": "TMA",
+            "layers": {
+                "bottom":8,
+                "top":9
+            },
+            "limitPoints": [
+                1403, 514, 1402, 1500, 1501, 248, 204, 249
+            ]
+        },{
+            "id":4,
+            "name": "TMA",
+            "layers": {
+                "bottom":8,
+                "top":9
+            },
+            "limitPoints": [
+                246, 1502, 1501, 1500, 1402, 514, 1403, 1404, 1405, 1406, 1505, 1504, 1503
+            ]
+        },{
+            "id":5,
+            "name": "TMA",
+            "layers": {
+                "bottom":8,
+                "top":9
+            },
+            "limitPoints": [
+                1406, 1505, 1506, 1410
+            ]
+        }
+    ]
+}
