@@ -237,19 +237,12 @@ self.addEventListener('message', function(e) {
         });
     }
     if (e.data.type === 'draw') {
-        const maps = e.data.maps;
+        const maps = JSON.parse(e.data.maps);
         self.maps = Object.assign([], maps);
-        // if (e.data.lastX && e.data.lastY && e.data.scale) {
-        //     self.ctx.translate(e.data.lastX, e.data.lastY);
-        //     self.ctx.scale(e.data.scale, e.data.scale);
-        //     self.ctx.translate(-e.data.lastX, -e.data.lastY);
-        // }
         self.ctx.save();
         clearCTX(self.ctx);
         drawBASE(self.ctx, maps);
         self.ctx.restore();
-        // self.ctx.restore();
-        // console.log(ctx, this.ctx);
         self.postMessage({
             msg_type: 'update_finished'
         });

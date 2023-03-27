@@ -217,7 +217,7 @@ self.addEventListener('message', function(e) {
     }
     if (e.data.type === 'draw') {
         // console.log(e.data);
-        const mapObj = e.data.maps;
+        const mapObj = JSON.parse(e.data.maps);
         self.mapObj = Object.assign([], mapObj);
         self.ctx.save();
         clearCTX(self.ctx);

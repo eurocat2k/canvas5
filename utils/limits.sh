@@ -1,4 +1,5 @@
 #!/bin/sh
+# # !/usr/local/bin/ksh93
 # Name: limits.sh
 # Author: G.Zelenak
 # Date: 24.03.2023
@@ -57,7 +58,8 @@ then
     tempfoo=`basename $0`
     TMPFILE=`mktemp /tmp/${tempfoo}.XXXXXX` || exit 1
     # out file overwritten every times
-    echo "[" > $OUTPUT
+    echo -e "{" > $OUTPUT
+    echo -e "\t\"limit_points\":[" >> $OUTPUT
     # start the conversion
     while IFS= read -r line
     do
@@ -69,10 +71,11 @@ then
             # Split line to grab 1st and 2nd fields: id and coord string accordingly
             ID="$(echo $line | cut -d'|' -f1)" 2>&1 >/dev/null
             CSTR="$(echo $line | cut -d'|' -f2)" 2>&1 >/dev/null
-            echo "{\"id\": $ID, \"coordstring\":\"$CSTR\"}," >> $OUTPUT
+            echo -e "\t\t{\"id\": $ID, \"coordstring\":\"$CSTR\"}," >> $OUTPUT
         fi
     done < $INPUT;
     sed -E '$s/(\{.*\}),/\1/' $OUTPUT > $TMPFILE
-    echo "]" >> $TMPFILE && mv $TMPFILE $OUTPUT
+    echo -e "\t]" >> $TMPFILE
+    echo -e "}" >> $TMPFILE && mv $TMPFILE $OUTPUT
 fi
 # set +x

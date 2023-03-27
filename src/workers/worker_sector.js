@@ -7,7 +7,34 @@ self.addEventListener('message', function(e) {
         ctx.restore();
     }
     function draw(ctx, sectors, role) {
-        console.log(self.sectors[0].points);
+        let context = ctx;
+        ctx.save();
+        ctx.lineWidth = 1 / self.scale;
+        ctx.strokeStyle = 'white';
+        try {
+            if (sectors && Array.isArray(sectors)) {
+                sectors.forEach(s => {
+                    // console.log({s});
+                    let fp;
+                    s.forEach((p, i) => {
+                        console.log({p});
+                        if (i === 0) {
+                            fp = Object.assign({}, p);
+                            context.beginPath();
+                            context.moveTo(p.x, p.y);
+                        } else {
+                            context.lineTo(p.x, p.y);
+                        }
+                    });
+                    // context.lineTo(fp.x, fp.y);
+                    context.stroke();
+                })
+                // console.log({sectors,role});
+            }   
+        } catch (error) {
+            console.error;
+        }
+        ctx.restore();
     }
     // message handlers
     if (e.data.type === 'canvas') {
@@ -32,7 +59,7 @@ self.addEventListener('message', function(e) {
         self.lastY = e.data.lastY;
         self.ctx.translate(self.lastX, self.lastY);
         clearCTX(self.ctx);
-        draw(self.ctx, self.mapObj);
+        draw(self.ctx, maps, role);
         self.postMessage({
             msg_type: 'update_ready'
         });
@@ -63,12 +90,12 @@ self.addEventListener('message', function(e) {
         });
     }
     if (e.data.type === 'draw') {
-        // maps = e.data.maps;
+        maps = JSON.parse(e.data.maps);
         role = e.data.role;
-        self.sectors = Object.assign([], e.data.maps);
+        self.sectors = Object.assign([], maps);
         self.ctx.save();
-        // clearCTX(self.ctx);
-        draw(self.ctx, self.sectors, role);
+        clearCTX(self.ctx);
+        draw(self.ctx, maps, role);
         self.ctx.restore();
         self.postMessage({
             msg_type: 'update_finished'

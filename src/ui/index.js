@@ -48,6 +48,15 @@ function onMouseMove(ev) {
         });
         // redraw characteristic points layer
         window.requestAnimationFrame(function() {
+            self._sectorWorker.postMessage({
+                type: 'translate',
+                lastX: tx,
+                lastY: ty,
+                scale: self.scale
+            });
+        });
+        // redraw characteristic points layer
+        window.requestAnimationFrame(function() {
             self._charWorker.postMessage({
                 type: 'translate',
                 lastX: tx,
@@ -266,7 +275,7 @@ export class UI {
                         requestAnimationFrame(function() {
                             self._baseWorker.postMessage({
                                 type: 'draw',
-                                maps: self._firs,
+                                maps: JSON.stringify(self._firs),
                                 scale: self._options.scales[self.zoomIndex-1].zoomLevel,
                             });
                         });
@@ -277,15 +286,15 @@ export class UI {
                             });
                             self._sectorWorker.postMessage({
                                 type: 'draw',
-                                maps: self._twrSectors,
-                                role: 'TWR',
+                                maps: JSON.stringify(self._sectors.find(s => s.id === 'TWR').points),
+                                role: 'ALL',
                                 scale: self._options.scales[self.zoomIndex-1].zoomLevel,
                             });
                         });
                         requestAnimationFrame(function() {
                             self._charWorker.postMessage({
                                 type: 'draw',
-                                maps: self._cpoints,
+                                maps: JSON.stringify(self._cpoints),
                                 scale: self._options.scales[self.zoomIndex-1].zoomLevel,
                             });
                         });
@@ -301,7 +310,7 @@ export class UI {
                         requestAnimationFrame(function() {
                             self._baseWorker.postMessage({
                                 type: 'draw',
-                                maps: self._firs,
+                                maps: JSON.stringify(self._firs),
                                 scale: self._options.scales[self.zoomIndex-1].zoomLevel,
                                 lastX: self._currentTransformedCursor.x,
                                 lastY: self._currentTransformedCursor.y,
@@ -318,8 +327,8 @@ export class UI {
                             });
                             self._sectorWorker.postMessage({
                                 type: 'draw',
-                                maps: self._twrSectors,
-                                role: 'TWR',
+                                maps: JSON.stringify(self._sectors.find(s => s.id === 'TWR').points),
+                                role: 'ALL',
                                 scale: self._options.scales[self.zoomIndex-1].zoomLevel,
                                 lastX: self._currentTransformedCursor.x,
                                 lastY: self._currentTransformedCursor.y,
@@ -329,7 +338,7 @@ export class UI {
                         requestAnimationFrame(function() {
                             self._charWorker.postMessage({
                                 type: 'draw',
-                                maps: self._cpoints,
+                                maps: JSON.stringify(self._cpoints),
                                 scale: self._options.scales[self.zoomIndex-1].zoomLevel,
                                 lastX: self._currentTransformedCursor.x,
                                 lastY: self._currentTransformedCursor.y,
@@ -526,7 +535,7 @@ export class UI {
                 self._appSectors =  self._sectors.filter(s => s.type === 'APP');
                 self._twrSectors =  self._sectors.filter(s => s.type === 'TWR');
                 self._fisSectors =  self._sectors.filter(s => s.type === 'FIS');
-                console.log(self._sectors);
+                // console.log(self._sectors);
             });
         });
         console.log({UI: this});
