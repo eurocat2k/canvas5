@@ -152,6 +152,8 @@ export class UI {
         });
         this._map_resolution = Config.ui.map_resolution;    // 1 pixel 500 meters
         self._maps = [];
+        self._sectors = [];
+        self._tracks = [];
         // info pad
         this._infopad = {
             div: $.find('div.infotab')[0],
@@ -240,7 +242,8 @@ export class UI {
             scale: self._xform.a,                   // or d - they shall be the same and common signed as well
             centerX: self._xform.e,         // transform X
             centerY: self._xform.f,         // transform Y
-            mapres: self._map_resolution    // map resolutions: 1 pixel equals 1 / map resolution meters
+            mapres: self._map_resolution,    // map resolutions: 1 pixel equals 1 / map resolution meters
+            sectors: self._sectors
         }, [offscreen02]);
         this._trackWorker.postMessage({
             type: 'canvas',
@@ -268,6 +271,18 @@ export class UI {
                             });
                         });
                         requestAnimationFrame(function() {
+                            self._sectorWorker.postMessage({
+                                type: 'clear',
+                                scale: self._options.scales[self.zoomIndex-1].zoomLevel,
+                            });
+                            self._sectorWorker.postMessage({
+                                type: 'draw',
+                                maps: self._twrSectors,
+                                role: 'TWR',
+                                scale: self._options.scales[self.zoomIndex-1].zoomLevel,
+                            });
+                        });
+                        requestAnimationFrame(function() {
                             self._charWorker.postMessage({
                                 type: 'draw',
                                 maps: self._cpoints,
@@ -278,12 +293,6 @@ export class UI {
                     break;
                 case 'update_finished':
                     if (this._busy) {
-                        // // call sector drawer
-                        // self._charWorker.postMessage({
-                        //     type: 'draw',
-                        //     maps: [...self._maps.map(m => {return m.airports})]
-                        // })
-                        // console.log(`Draw finished...`);
                         this._busy = false;
                     }
                     break;
@@ -293,6 +302,24 @@ export class UI {
                             self._baseWorker.postMessage({
                                 type: 'draw',
                                 maps: self._firs,
+                                scale: self._options.scales[self.zoomIndex-1].zoomLevel,
+                                lastX: self._currentTransformedCursor.x,
+                                lastY: self._currentTransformedCursor.y,
+                                mapres: self._map_resolution
+                            });
+                        });
+                        requestAnimationFrame(function() {
+                            self._sectorWorker.postMessage({
+                                type: 'clear',
+                                scale: self._options.scales[self.zoomIndex-1].zoomLevel,
+                                lastX: self._currentTransformedCursor.x,
+                                lastY: self._currentTransformedCursor.y,
+                                mapres: self._map_resolution
+                            });
+                            self._sectorWorker.postMessage({
+                                type: 'draw',
+                                maps: self._twrSectors,
+                                role: 'TWR',
                                 scale: self._options.scales[self.zoomIndex-1].zoomLevel,
                                 lastX: self._currentTransformedCursor.x,
                                 lastY: self._currentTransformedCursor.y,
@@ -414,6 +441,93 @@ export class UI {
                 self._cpoints.push(cpoint);
             })
             // console.log({firs: self._firs});
+        });
+        // limit points
+        $.getJSON('data/limits.json', (data) => {
+            self._limit_points = Object.assign([], data);
+            if (self._limit_points && Array.isArray(self._limit_points)) {
+                self._limit_points.forEach((lp,i) => {
+                    let cstr,lat,lon, x, y;
+                    if (lp.coordstring) {
+                        cstr = lp.coordstring.replace(/\s+/g, '');
+                        let [ll] = cstr.matchAll(/^(\d{2})(\d{2})(\d{2})[NS]0(\d{2})(\d{2})(\d{2})[EW]$/g);
+                        if (ll.length === 7) {
+                            ll = ll.slice(1, 7).map(e => parseInt(e));
+                            // LAT
+                            lat = ll[0];
+                            lat += ll[1] / 60;
+                            lat += ll[2] / (60 * 60);
+                            // LON
+                            lon = ll[3];
+                            lon += ll[4] / 60;
+                            lon += ll[5] / (60 * 60);
+                            // GET XY
+                            let xy = self._stereo.forward(lat, lon);
+                            self._limit_points[i] = {id: lp.id, x: xy.x * self._map_resolution, y: -xy.y * self._map_resolution};
+                        }
+                    }
+                });
+            }
+        });
+        // get sectors data
+        $.getJSON('data/sectors.json', (data) => {
+            self._sectors = Object.assign([], data.sector);
+            let sector = data?.sector;
+            let volume  = data?.volume;
+            let layer   = data?.layer;
+            // console.log(self._limit_points);
+            sector.forEach((s, i) => {
+                let _sector = {
+                    id: s.id,
+                    type: 'XXX',
+                    bottom: Number.POSITIVE_INFINITY,
+                    top: Number.NEGATIVE_INFINITY,
+                    points: [],
+                    active: false
+                };
+                if (_sector.id.match(/^[TNS][EW]?[LU]$/g)) {
+                    _sector.type = 'APP';
+                } else if (_sector.id.match(/^[NS][EW]$/)) {
+                    _sector.type = 'APP';
+                } else if (_sector.id.match(/^TWR$/)) {
+                    _sector.type = 'TWR';
+                } else if (_sector.id.match(/^[N|E|W|S]{2,}/)) {
+                    _sector.type = 'ACC';
+                } else {
+                    _sector.type = 'FIS';
+                }
+                // process sector volumes...
+                s.volume.forEach(v => {
+                    let _vol = volume.find(_v => _v.id === v);
+                    // get layers and calculate vertical limits of the sector
+                    _vol.layer.forEach(_l => {
+                        let _layer = layer.find(l => l.id === _l);
+                        if (_layer) {
+                            if (_layer.bottom < _sector.bottom) {
+                                _sector.bottom = _layer.bottom;
+                            }
+                            if (_layer.top > _sector.top) {
+                                _sector.top = _layer.top;
+                            }
+                            let _lpoints = []
+                            _vol.limit_point.forEach((lpid, i) => {
+                                if (self._limit_points) {
+                                    // find x,y coordinates of the limit point and store into sector definition
+                                    let lp = self._limit_points.find(p => p.id === lpid);
+                                    _lpoints.push(lp);
+                                }
+                            });
+                            _sector.points.push(_lpoints);
+                        }
+                    });
+                    self._sectors[i] = _sector;
+                });
+                self._accSectors =  self._sectors.filter(s => s.type === 'ACC');
+                self._appSectors =  self._sectors.filter(s => s.type === 'APP');
+                self._twrSectors =  self._sectors.filter(s => s.type === 'TWR');
+                self._fisSectors =  self._sectors.filter(s => s.type === 'FIS');
+                console.log(self._sectors);
+            });
         });
         console.log({UI: this});
     }

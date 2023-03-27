@@ -62,35 +62,9 @@ then
     # out file overwritten every times
     echo "[" > $OUTPUT
     # start the conversion
-    while IFS= read -r line
+    while read line
     do
-        # skip comments from file
-        echo $line | grep -v "\-"; status=$(echo $?) 2>&1 >/dev/null
-        # Check status
-        if [ $status -eq 0 ]
-        then
-            # get layers firs
-            echo $line|grep -Eo "\/LAYER\/";status=$(echo $?)
-            if [ status -eq 0 ]
-            then
-                $LAYER=1
-            fi
-            echo $line|grep -Eo "\/VOLUME\/";status=$(echo $?)
-            # if [ _VOLUME -eq 0 ]
-            # then
-            #     $LAYER=0
-            #     $VOLUME=1
-            # fi
-            _SECTOR=$(echo $line|grep -E "\/VOLUME\/" 2>&1 >/dev/null;status=$(echo $?))
-            # if [ _SECTOR -eq 0 ]
-            # then
-            #     $VOLUME=0
-            #     $SECTOR=1
-            # fi
-            # ID="$(echo $line | cut -d'|' -f1)" 2>&1 >/dev/null
-            # CSTR="$(echo $line | cut -d'|' -f2)" 2>&1 >/dev/null
-            # echo "{\"id\": $ID, \"coordstring\":\"$CSTR\"}," >> $OUTPUT
-        fi
+        echo $line
     done < $INPUT;
     sed -E '$s/(\{.*\}),/\1/' $OUTPUT > $TMPFILE
     echo "]" >> $TMPFILE && mv $TMPFILE $OUTPUT

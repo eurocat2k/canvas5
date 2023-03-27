@@ -1,4 +1,4 @@
-let maps, canvas, ctx, lastX, lastY, centerX, centerY, scale = 1, mapres;
+let maps, canvas, ctx, lastX, lastY, centerX, centerY, scale = 1, role, mapres;
 self.addEventListener('message', function(e) {
     function clearCTX(ctx) {
         ctx.save();
@@ -6,7 +6,8 @@ self.addEventListener('message', function(e) {
         ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
         ctx.restore();
     }
-    function draw(ctx, mapObj) {
+    function draw(ctx, sectors, role) {
+        console.log(self.sectors[0].points);
     }
     // message handlers
     if (e.data.type === 'canvas') {
@@ -21,6 +22,7 @@ self.addEventListener('message', function(e) {
         self.ctx.scale(self.scale, self.scale);
         self.ctx.translate(self.centerX, self.centerY);
         self.mapres = e.data.mapres;
+        self.sectors = e.data.sectors;
         self.postMessage({
             msg_type: 'update_ready'
         });
@@ -49,12 +51,24 @@ self.addEventListener('message', function(e) {
             msg_type: 'scale_ready'
         });
     }
-    if (e.data.type === 'draw') {
-        const mapObj = e.data.maps;
-        self.mapObj = Object.assign([], mapObj);
+    if (e.data.type === 'clear') {
+        // maps = e.data.maps;
+        role = e.data.role;
+        maps = Object.assign([], e.data.maps);
         self.ctx.save();
         clearCTX(self.ctx);
-        draw(self.ctx, mapObj);
+        self.ctx.restore();
+        self.postMessage({
+            msg_type: 'clear_finished'
+        });
+    }
+    if (e.data.type === 'draw') {
+        // maps = e.data.maps;
+        role = e.data.role;
+        self.sectors = Object.assign([], e.data.maps);
+        self.ctx.save();
+        // clearCTX(self.ctx);
+        draw(self.ctx, self.sectors, role);
         self.ctx.restore();
         self.postMessage({
             msg_type: 'update_finished'
