@@ -66,7 +66,8 @@ self.addEventListener('message', function(e) {
         // demo draw on base layer:
         // console.log(maps[0].name)
         if (typeof maps !== 'undefined') {
-            self.maps = Object.assign([], maps);
+            console.log({ maps });
+            maps = Object.assign([], maps);
             maps.forEach(map => {
                 // draw border and fir first
                 let border = map.border;
@@ -217,7 +218,8 @@ self.addEventListener('message', function(e) {
         self.lastY = e.data.lastY;
         self.ctx.translate(self.lastX, self.lastY);
         clearCTX(self.ctx);
-        drawBASE(self.ctx, self.maps);
+        // drawBASE(self.ctx, self.maps);
+        drawBASE(self.ctx, maps);
         self.postMessage({
             msg_type: 'update_ready'
         });
@@ -237,8 +239,12 @@ self.addEventListener('message', function(e) {
         });
     }
     if (e.data.type === 'draw') {
-        const maps = JSON.parse(e.data.maps);
-        self.maps = Object.assign([], maps);
+        if (e.data.maps) {
+            // maps = Object.assign([], JSON.parse(e.data.maps));
+            maps = JSON.parse(e.data.maps);
+        }
+        // const maps = JSON.parse(e.data.maps);
+        // self.maps = Object.assign([], maps);
         self.ctx.save();
         clearCTX(self.ctx);
         drawBASE(self.ctx, maps);
