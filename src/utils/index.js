@@ -15,7 +15,7 @@ export function initZoomSteps(min = -1, max = 1, obj) {
     obj.maxZoom = _steps;
     for (let i = 1, v = _min; i <= _steps; i += 1, v += 1) {
         let e = Math.exp(v / 10);
-        zoomSteps.push({ zoomIndex: i, zoomLevel: e });
+        zoomSteps.push({ zoomIndex: i, zoomLevel: e, sel: e === 1 ? true : false });
     }
     return zoomSteps;
 }

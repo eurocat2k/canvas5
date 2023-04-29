@@ -62,12 +62,14 @@ self.addEventListener('message', function(e) {
         ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
         ctx.restore();
     }
-    function drawBASE(ctx, maps) {
+    function drawBASE(ctx, _maps) {
         // demo draw on base layer:
         // console.log(maps[0].name)
-        if (typeof maps !== 'undefined') {
-            console.log({ maps });
-            maps = Object.assign([], maps);
+        if (typeof _maps !== 'undefined') {
+            // console.log({ maps });
+            if (typeof maps === 'undefined') {
+                maps = Object.assign([], _maps);
+            }
             maps.forEach(map => {
                 // draw border and fir first
                 let border = map.border;

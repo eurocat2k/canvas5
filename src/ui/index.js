@@ -93,36 +93,60 @@ function onMouseOut(ev) {
 function onMouseWheel(ev) {
     let self = this;
     console.log(`Mouse wheel event detected...`);
-    // let tmpIndex = -1;
-    // let minIndex = -1;  // using lodash inRange requires extend bundaries to include lower and upper values of the boundaries
-    // let maxIndex = self._options.scales.length;
-    // let currentZoomIndex = self._options.scales.findIndex(s => s.sel === true);
-    // const zoom = ev.deltaY < 0 ? 1.1 : 0.9;
-    // if (ev.wheelDelta < 0) {
-    //     if ((currentZoomIndex - 1) > 0) {
-    //         self._options.scales[currentZoomIndex].sel = false;
-    //         self._options.scales[currentZoomIndex - 1].sel = true;
-    //         self._baseWorker.postMessage({
-    //             type: 'scale',
-    //             scale: zoom,
-    //             lastX: self._currentTransformedCursor.x,
-    //             lastY: self._currentTransformedCursor.y,
-    //         });
-    //     }
-    //     console.log(`Zoom out...`);
-    // } else {
-    //     if ((currentZoomIndex + 1) < maxIndex) {
-    //         self._options.scales[currentZoomIndex].sel = false;
-    //         self._options.scales[currentZoomIndex + 1].sel = true;
-    //         self._baseWorker.postMessage({
-    //             type: 'scale',
-    //             scale: zoom,
-    //             lastX: self._currentTransformedCursor.x,
-    //             lastY: self._currentTransformedCursor.y,
-    //         });
-    //     }
-    //     console.log(`Zoom in...`);
-    // }
+    let tmpIndex = -1;
+    let minIndex = -1;  // using lodash inRange requires extend bundaries to include lower and upper values of the boundaries
+    let maxIndex = self._options.scales.length;
+    let currentZoomIndex = self._options.scales.findIndex(s => s.sel === true);
+    const zoom = ev.deltaY < 0 ? 1.1 : 0.9;
+    if (ev.wheelDelta < 0) {
+        if ((currentZoomIndex - 1) > 0) {
+            self._options.scales[currentZoomIndex].sel = false;
+            self._options.scales[currentZoomIndex - 1].sel = true;
+            self._baseWorker.postMessage({
+                type: 'scale',
+                scale: zoom,
+                lastX: self._currentTransformedCursor.x,
+                lastY: self._currentTransformedCursor.y,
+            });
+            self._sectorWorker.postMessage({
+                type: 'scale',
+                scale: zoom,
+                lastX: self._currentTransformedCursor.x,
+                lastY: self._currentTransformedCursor.y,
+            });
+            self._charWorker.postMessage({
+                type: 'scale',
+                scale: zoom,
+                lastX: self._currentTransformedCursor.x,
+                lastY: self._currentTransformedCursor.y,
+            });
+        }
+        console.log(`Zoom out...`);
+    } else {
+        if ((currentZoomIndex + 1) < maxIndex) {
+            self._options.scales[currentZoomIndex].sel = false;
+            self._options.scales[currentZoomIndex + 1].sel = true;
+            self._baseWorker.postMessage({
+                type: 'scale',
+                scale: zoom,
+                lastX: self._currentTransformedCursor.x,
+                lastY: self._currentTransformedCursor.y,
+            });
+            self._sectorWorker.postMessage({
+                type: 'scale',
+                scale: zoom,
+                lastX: self._currentTransformedCursor.x,
+                lastY: self._currentTransformedCursor.y,
+            });
+            self._charWorker.postMessage({
+                type: 'scale',
+                scale: zoom,
+                lastX: self._currentTransformedCursor.x,
+                lastY: self._currentTransformedCursor.y,
+            });
+        }
+        console.log(`Zoom in...`);
+    }
     ev.preventDefault();
 }
 // UI class
