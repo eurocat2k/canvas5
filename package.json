@@ -17,7 +17,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^6.7.3",
     "style-loader": "^3.3.2",
     "webpack": "^5.94.0",
